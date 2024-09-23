@@ -1,0 +1,24 @@
+# ODK workflow to check serialization diff
+
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  ontology_diff:
+    runs-on: ubuntu-latest
+    container: obolibrary/odklite:v1.5.2
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run ontology diff check
+        env:
+          DEFAULT_BRANCH: main
+        run: export ROBOT_JAVA_ARGS=-Xmx6G; robot convert --input vivo.owl --output vivo-reserialized.owl && diff vivo.owl vivo-reserialized.owl
